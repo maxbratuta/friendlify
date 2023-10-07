@@ -1,0 +1,51 @@
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+  <div class="toast-container top-0 end-0 p-3">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="toast align-items-center
+        {% if message.tags == "debug" %}text-bg-secondary
+        {% elif message.tags == "info" %}text-bg-primary
+        {% elif message.tags == "success" %}text-bg-success
+        {% elif message.tags == "warning" %}text-bg-warning
+        {% elif message.tags == "error" %}text-bg-danger
+        {% else %}text-bg-default{% endif %} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+                    <button
+                            type="button"
+                            class="btn-close
+                    {% if message.tags == "success" %} btn-close-black
+                    {% else %} btn-close-white
+                    {% endif %} me-2 m-auto"
+                            data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+{#  # TODO: notification toast #}
+{#    {% if messages %}#}
+{#        {% for message in messages %}#}
+{#    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">#}
+{#      <div class="toast-header ">#}
+{#          <div#}
+{#              style="width: 20px; height: 20px;"#}
+{#              class="rounded me-2 {% if message.tags == "debug" %}bg-secondary#}
+{#                {% elif message.tags == "info" %}bg-primary#}
+{#                {% elif message.tags == "success" %}bg-success#}
+{#                {% elif message.tags == "warning" %}bg-warning#}
+{#                {% elif message.tags == "error" %}bg-danger#}
+{#                {% else %}bg-default{% endif %}"#}
+{#          ></div>#}
+{#        <strong class="me-auto">Bootstrap</strong>#}
+{#        <small class="text-body-secondary">just now</small>#}
+{#        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>#}
+{#      </div>#}
+{#      <div class="toast-body">{{ message }}</div>#}
+{#    </div>#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
+  </div>
+</div>
