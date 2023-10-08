@@ -10,12 +10,11 @@
     <title>Friendlify</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="{% static "css/style.css" %}"/>
 </head>
 <body>
-    {% include "components/header.html" %}
-    {% include "components/messages.html" %}
+    {% include "friendlify/components/header.html" %}
+    {% include "friendlify/components/notifications.html" %}
 
     {% block content %}
     {% endblock %}

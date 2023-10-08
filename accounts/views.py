@@ -11,7 +11,6 @@ def login_page(request):
         return redirect("feed")
 
     if request.method == "POST":
-        print(request.POST)
         email = request.POST.get("email", "").lower()
         password = request.POST.get("password", "")
         remember_me = request.POST.get("remember_me", False)

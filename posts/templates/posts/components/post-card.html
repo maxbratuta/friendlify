@@ -1,0 +1,48 @@
+{% load static %}
+{% load icon %}
+
+<section class="post-interface px-4 py-3 bg-light-2 rounded">
+    <header class="post-header d-flex flex-row justify-content-between pb-3">
+        <div class="d-flex flex-row align-items-center">
+            <a class="link-block" href="{% url "feed" %}">
+                <div class="user-initials d-flex flex-row align-items-center rounded">
+                    <div class="user-avatar bg-white border rounded-5">
+                        <div
+                                class="d-flex justify-content-center align-items-center m-1 bg-dark rounded-5"
+                                style="width: 26px; height: 26px;"
+                        >
+                            <span class="text-light fs-8">OH</span>
+                        </div>
+                    </div>
+                    <span class="user-name px-1 fw-bold hoverable-text">Ola Homber</span>
+                </div>
+            </a>
+
+            <time class="ps-2" datetime="2023-10-01">1 Oct</time>
+        </div>
+
+        {# # TODO #}
+        <!-- Options menu, if needed -->
+        {#        <button class="options-menu">...</button>#}
+        <span>
+            {% icon "more-horizontal" %}
+        </span>
+    </header>
+    <div class="post-content overflow-hidden ratio ratio-1x1">
+        <div class="content-container position-relative w-100 h-100">
+            <img
+                class="w-100 h-100 object-fit-contain rounded-5"
+                src="https://placehold.co/2048/000000/FFFFFF.png"
+                alt="Placeholder">
+            <div class="message position-absolute bottom-0 start-50 translate-middle-x mb-4 blur-bg">
+                <span
+                    class="badge px-3 py-2 rounded-pill bg-light bg-opacity-50 text-white fs-7 fw-normal"
+                >Windy Day</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="post-footer">
+        {% include "friendlify/components/elements/input.html" with id="send_message" name="send_message" type="text" placeholder="Send message..."  class="form-control px-3 py-2 mt-3 rounded-5 fs-7" %}
+    </footer>
+</section>
