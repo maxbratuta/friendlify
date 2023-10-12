@@ -1,18 +1,52 @@
 <header class="sticky-top">
     <nav class="navbar navbar-light bg-light shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="/">Friendlify</a>
+            <div class="d-flex flex-row">
+                <a class="navbar-brand" href="/">Friendlify</a>
+
+                <ul class="nav ms-4">
+                    <li class="nav-item rounded p-1">
+                        <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/feed/' %} active{% endif %}"
+                           href="{% url 'feed' %}">Feed</a>
+                    </li>
+
+                    <li class="nav-item rounded p-1">
+                        <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/gallery/' %} active{% endif %}"
+                           href="{% url 'feed' %}">Gallery</a>
+                    </li>
+
+                    <li class="nav-item rounded p-1">
+                        <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/messages/' %} active{% endif %}"
+                           href="{% url 'register' %}">Messages</a>
+                    </li>
+
+                    <li class="nav-item rounded p-1">
+                        <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/friends/' %} active{% endif %}"
+                           href="{% url 'register' %}">Friends</a>
+                    </li>
+                </ul>
+            </div>
+
             <div class="d-flex">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
 
                 {% if user.is_authenticated %}
-                    <span class="navbar-text mx-4">Welcome, {{ request.user.username }}</span>
+                    <div class="dropdown d-flex flex-row text-end">
+                        <a
+                            href="#"
+                            class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >{% include 'accounts/components/user-initials.html' with user=auth.user %}</a>
 
-                    <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-primary" href="{% url 'logout' %}">Logout</a>
-                        </li>
-                    </ul>
+                        <ul class="dropdown-menu dropdown-menu-end mt-1 text-small">
+                            <li><h6 class="dropdown-header">Account</h6></li>
+                            <li><a class="dropdown-item" href="{% url "user-profile" auth.user.id %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"/></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
                 {% else %}
                     <ul class="nav">
                         <li class="nav-item">

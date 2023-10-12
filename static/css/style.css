@@ -100,6 +100,15 @@ a.link-block:hover .hoverable-block {
     backdrop-filter: blur(5px);
 }
 
+a.nav-link.active {
+    font-weight: bold;
+}
+
+a.nav-link:hover {
+    background: #EBECED !important;
+}
+
+
 .mh-512 {
     max-height: 512px;
 }

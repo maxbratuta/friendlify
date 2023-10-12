@@ -77,7 +77,7 @@ def feed(request):
                 'initials': 'PS',
                 'avatar': None
             },
-            'image_url': static('posts/post-image-1.jpg'),
+            'image_url': static('images/posts/post-image-1.jpg'),
             'description': 'El Camino de mi Almo',
             'created_at': '2 Oct',
         },
@@ -89,7 +89,7 @@ def feed(request):
                 'initials': 'OH',
                 'avatar': None,
             },
-            'image_url': static('posts/post-image-2.jpg'),
+            'image_url': static('images/posts/post-image-2.jpg'),
             'description': 'Windy Day!',
             'created_at': '1 Oct',
         }
@@ -102,8 +102,17 @@ def feed(request):
 
     # context = {'rooms': rooms, 'topics': topics,
     #            'room_count': room_count, 'room_messages': room_messages}
+
     return render(request, "posts/index.html", {
         "posts": posts,
         "conversations": conversations,
         "friends_list": friends_list,
+        "auth": {
+            "user": {
+                "id": request.user.id,
+                "full_name": request.user.get_full_name(),
+                "initials": "AD",
+                "avatar": request.user.avatar,
+            }
+        }
     })
