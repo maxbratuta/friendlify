@@ -11,8 +11,10 @@
     <div class="feed__content">
         <div class="row">
             <div class="col col-xl-2 col-lg-1 col-12"></div>
-            <div class="col col-xl-8 col-lg-10 col-12">
-                {% include "posts/components/post-card.html" %}
+            <div class="posts overflow-scroll mh-512 col col-xl-8 col-lg-10 col-12">
+                {% for post in posts %}
+                    {% include "posts/components/post-card.html" with post=post %}
+                {% endfor %}
             </div>
             <div class="col col-xl-2 col-lg-1 col-12"></div>
         </div>

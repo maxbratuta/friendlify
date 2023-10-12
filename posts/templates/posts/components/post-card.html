@@ -1,24 +1,14 @@
 {% load static %}
 {% load icon %}
 
-<section class="post-interface px-4 py-3 bg-light-2 rounded">
-    <header class="post-header d-flex flex-row justify-content-between pb-3">
+<section class="post-interface px-4 py-3 mb-4 bg-light-2 rounded">
+    <div class="post-header d-flex flex-row justify-content-between pb-3">
         <div class="d-flex flex-row align-items-center">
-            <a class="link-block" href="{% url "feed" %}">
-                <div class="user-initials d-flex flex-row align-items-center rounded">
-                    <div class="user-avatar bg-white border rounded-5">
-                        <div
-                                class="d-flex justify-content-center align-items-center m-1 bg-dark rounded-5"
-                                style="width: 26px; height: 26px;"
-                        >
-                            <span class="text-light fs-8">OH</span>
-                        </div>
-                    </div>
-                    <span class="user-name px-1 fw-bold hoverable-text">Ola Homber</span>
-                </div>
+            <a href="{% url "user-profile" post.user.id %}" class="link-block">
+                {% include 'accounts/components/user-initials.html' with user=post.user %}
             </a>
 
-            <time class="ps-2" datetime="2023-10-01">1 Oct</time>
+            <span class="ps-2">{{ post.created_at }}</span>
         </div>
 
         {# # TODO #}
@@ -27,17 +17,17 @@
         <span>
             {% icon "more-horizontal" %}
         </span>
-    </header>
+    </div>
     <div class="post-content overflow-hidden ratio ratio-1x1">
         <div class="content-container position-relative w-100 h-100">
             <img
                 class="w-100 h-100 object-fit-contain rounded-5"
-                src="https://placehold.co/2048/000000/FFFFFF.png"
+                src="{{ post.image_url }}"
                 alt="Placeholder">
             <div class="message position-absolute bottom-0 start-50 translate-middle-x mb-4 blur-bg">
                 <span
                     class="badge px-3 py-2 rounded-pill bg-light bg-opacity-50 text-white fs-7 fw-normal"
-                >Windy Day</span>
+                >{{ post.description }}</span>
             </div>
         </div>
     </div>

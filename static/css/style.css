@@ -72,6 +72,14 @@ a.link-block:hover .hoverable-text {
     text-decoration: underline;
 }
 
+a.link-block .hoverable-block {
+    border: 1px solid transparent;
+}
+
+a.link-block:hover .hoverable-block {
+    border: 1px solid;
+}
+
 .bg-light-2 {
     background: #EBECED;
 }
@@ -90,4 +98,12 @@ a.link-block:hover .hoverable-text {
 
 .blur-bg {
     backdrop-filter: blur(5px);
+}
+
+.mh-512 {
+    max-height: 512px;
+}
+
+.post-interface {
+    box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
 }

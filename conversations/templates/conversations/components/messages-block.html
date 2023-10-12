@@ -1,1 +1,7 @@
-Messages Block
+<div class="messages-block__wrapper">
+    {% for conversation in conversations %}
+        <a href="{% url 'conversation' conversation.id %}" class="link-block">
+            {% include "conversations/components/message.html" with conversation=conversation %}
+        </a>
+    {% endfor %}
+</div>

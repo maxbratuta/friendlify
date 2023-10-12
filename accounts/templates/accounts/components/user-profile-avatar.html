@@ -1,0 +1,12 @@
+<div class="user-avatar bg-white border rounded-5">
+    {% if avatar %}
+        {# # TODO #}
+    {% else %}
+        <div
+            class="d-flex justify-content-center align-items-center m-1 bg-dark rounded-5"
+            style="width: 26px; height: 26px;"
+        >
+            <span class="text-light fs-8">{{ initials }}</span>
+        </div>
+    {% endif %}
+</div>

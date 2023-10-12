@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def conversation_page(request, id):
+    pass

@@ -66,3 +66,7 @@ def register_page(request):
 def logout_user(request):
     logout(request)
     return redirect("home")
+
+
+def user_profile(request, id):
+    pass
