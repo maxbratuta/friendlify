@@ -5,7 +5,28 @@
         <div class="row gx-3 gy-3">
             <div class="col col-lg-7 col-md-7 col-sm-12 col-12 order-lg-1 order-md-1 order-sm-2 order-2">
                 <div class="p-4 bg-light rounded">
-                    {% include "posts/components/feed.html" %}
+                    <div class="feed__wrapper">
+                        <div class="feed__header d-flex flex-row justify-content-between mb-4">
+                            <h2 class="title h4 m-0">Feed</h2>
+                            <div class="filter">
+                                {% include "friendlify/components/elements/link.html" with value="Everyone" action_url="feed" class="btn btn-light border rounded-5" icon="chevron-down" icon_size="18" before="False" %}
+                            </div>
+                            <div class="actions">
+                                {% include "friendlify/components/elements/link.html" with value="Add post" action_url="feed" class="btn btn-dark" icon="plus" icon_size="18" %}
+                            </div>
+                        </div>
+                        <div class="feed__content">
+                            <div class="row">
+                                <div class="col col-xl-2 col-lg-1 col-12"></div>
+                                <div class="posts overflow-scroll mh-512 col col-xl-8 col-lg-10 col-12">
+                                    {% for post in posts %}
+                                        {% include "posts/components/post-card.html" with post=post %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col col-xl-2 col-lg-1 col-12"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

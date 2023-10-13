@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns = [
     path("feed/", views.feed, name="feed"),
+    path("gallery/", views.gallery, name="gallery"),
 ]

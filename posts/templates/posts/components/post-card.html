@@ -18,12 +18,15 @@
             {% icon "more-horizontal" %}
         </span>
     </div>
+
     <div class="post-content overflow-hidden ratio ratio-1x1">
         <div class="content-container position-relative w-100 h-100">
             <img
                 class="w-100 h-100 object-fit-contain rounded-5"
                 src="{{ post.image_url }}"
-                alt="Placeholder">
+                alt="{{ post.user.full_name }}"
+            />
+
             <div class="message position-absolute bottom-0 start-50 translate-middle-x mb-4 blur-bg">
                 <span
                     class="badge px-3 py-2 rounded-pill bg-light bg-opacity-50 text-white fs-7 fw-normal"
