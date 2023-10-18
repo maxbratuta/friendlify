@@ -9,37 +9,20 @@
 .w-fit-content {
     width: fit-content;
 }
+.w-max-content {
+    width: max-content;
+}
 
 .p-4-5 {
     padding: 32px;
 }
 
-.pt-4-5 {
+.py-4-5 {
     padding-top: 32px;
-}
-
-.pr-4-5 {
-    padding-right: 32px;
-}
-
-.pb-4-5 {
     padding-bottom: 32px;
 }
 
-.pl-4-5 {
-    padding-left: 32px;
-}
-
-
-.m-4-5 {
-    margin: 32px;
-}
-
-.mt-4-5 {
-    margin-top: 32px;
-}
-
-.mr-4-5 {
+.ms-4-5 {
     margin-right: 32px;
 }
 
@@ -47,7 +30,7 @@
     margin-bottom: 32px;
 }
 
-.ml-4-5 {
+.me-4-5 {
     margin-left: 32px;
 }
 
@@ -60,23 +43,25 @@
     cursor: pointer;
 }
 
-a.link-block,
-a.link-block:hover,
-a.link-block:focus,
-a.link-block:active {
+.link-block,
+.link-block:hover,
+.link-block:focus,
+.link-block:active {
     text-decoration: none;
     color: inherit;
 }
 
-a.link-block:hover .hoverable-text {
+.link-block:hover .hoverable-text {
+    cursor: pointer;
     text-decoration: underline;
 }
 
-a.link-block .hoverable-block {
+.link-block .hoverable-block {
+    cursor: pointer;
     border: 1px solid transparent;
 }
 
-a.link-block:hover .hoverable-block {
+.link-block:hover .hoverable-block {
     border: 1px solid;
 }
 
@@ -112,6 +97,22 @@ a.nav-link:hover {
 .mh-512 {
     max-height: 512px;
 }
+
+.sticky-top {
+    z-index: 1050;
+}
+
+.h-fit-content {
+    height: fit-content;
+}
+
+.user-avatar.small-avatar .adaptive-font span {
+    font-size: 1vw;
+}
+.user-avatar.large-avatar .adaptive-font span {
+    font-size: 4vw;
+}
+
 
 .post-interface {
     box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;

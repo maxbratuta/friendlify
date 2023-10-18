@@ -1,6 +1,10 @@
 {% load icon %}
 
-<a class="d-inline-flex py-1 px-2 fs-7 {{ class }}" href="{% url action_url %}" role="button">
+{% if id %}
+    <a class="d-inline-flex {{ class }}" href="{% url action_url id %}" role="button">
+{% else %}
+    <a class="d-inline-flex {{ class }}" href="{% url action_url %}" role="button">
+{% endif %}
     {% if icon and before|default:"True" == "True" %}
         <span class="d-flex flex-row align-self-center pe-1">
         {% icon icon height=icon_size|default:"24" width=icon_size|default:"24" %}

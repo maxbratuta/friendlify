@@ -4,27 +4,33 @@
             <div class="d-flex flex-row">
                 <a class="navbar-brand" href="/">Friendlify</a>
 
-                <ul class="nav ms-4">
-                    <li class="nav-item rounded p-1">
-                        <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/feed/' %} active{% endif %}"
-                           href="{% url 'feed' %}">Feed</a>
-                    </li>
+                {% if user.is_authenticated %}
+                    <ul class="nav ms-4">
+                        <li class="nav-item rounded p-1">
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/feed/' %} active{% endif %}"
+                               href="{% url 'feed' %}"
+                            >Feed</a>
+                        </li>
 
-                    <li class="nav-item rounded p-1">
-                        <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/gallery/' %} active{% endif %}"
-                           href="{% url 'gallery' %}">Gallery</a>
-                    </li>
+                        <li class="nav-item rounded p-1">
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/gallery/' %} active{% endif %}"
+                               href="{% url 'gallery' %}"
+                            >Gallery</a>
+                        </li>
 
-                    <li class="nav-item rounded p-1">
-                        <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/messages/' %} active{% endif %}"
-                           href="{% url 'register' %}">Messages</a>
-                    </li>
+                        <li class="nav-item rounded p-1">
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/messages/' %} active{% endif %}"
+                               href="{% url 'register' %}"
+                            >Messages</a>
+                        </li>
 
-                    <li class="nav-item rounded p-1">
-                        <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/friends/' %} active{% endif %}"
-                           href="{% url 'register' %}">Friends</a>
-                    </li>
-                </ul>
+                        <li class="nav-item rounded p-1">
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/friends/' %} active{% endif %}"
+                               href="{% url 'register' %}"
+                            >Friends</a>
+                        </li>
+                    </ul>
+                {% endif %}
             </div>
 
             <div class="d-flex">
@@ -37,23 +43,48 @@
                             class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
-                        >{% include 'accounts/components/user-initials.html' with user=auth.user %}</a>
+                        >{% include 'accounts/components/user-profile-avatar-wrapper.html' with user=request.user %}</a>
 
                         <ul class="dropdown-menu dropdown-menu-end mt-1 text-small">
-                            <li><h6 class="dropdown-header">Account</h6></li>
-                            <li><a class="dropdown-item" href="{% url "user-profile" auth.user.id %}">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><hr class="dropdown-divider"/></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            <li>
+                                <h6 class="dropdown-header">Account</h6>
+                            </li>
+
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url "users.show" request.user.username %}"
+                                >Profile</a>
+                            </li>
+
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url "users.edit" request.user.username %}"
+                                >Settings</a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider"/>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </li>
                         </ul>
                     </div>
                 {% else %}
                     <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="{% url 'login' %}">Login</a>
+                        <li class="nav-item rounded p-1">
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/login/' %} active{% endif %}"
+                               href="{% url 'login' %}"
+                            >Login</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-secondary" href="{% url 'register' %}">Sign up</a>
+
+                        <li class="nav-item rounded p-1">
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/register/' %} active{% endif %}"
+                               href="{% url 'register' %}"
+                            >Sign up</a>
                         </li>
                     </ul>
                 {% endif %}

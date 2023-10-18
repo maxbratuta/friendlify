@@ -1,14 +1,14 @@
 {% load static %}
 {% load icon %}
 
-<section class="post-interface px-4 py-3 mb-4 bg-light-2 rounded">
+<section class="post-interface px-4 py-3 bg-light-2 rounded {{ additional_classes }}">
     <div class="post-header d-flex flex-row justify-content-between pb-3">
         <div class="d-flex flex-row align-items-center">
-            <a href="{% url "user-profile" post.user.id %}" class="link-block">
-                {% include 'accounts/components/user-initials.html' with user=post.user %}
+            <a href="{% url "users.show" post.user.username %}" class="link-block">
+                {% include 'accounts/components/user-profile-avatar-wrapper.html' with user=post.user %}
             </a>
 
-            <span class="ps-2">{{ post.created_at }}</span>
+            <span class="ps-2">{{ post.formatted_created_at }}</span>
         </div>
 
         {# # TODO #}
@@ -23,8 +23,8 @@
         <div class="content-container position-relative w-100 h-100">
             <img
                 class="w-100 h-100 object-fit-contain rounded-5"
-                src="{{ post.image_url }}"
-                alt="{{ post.user.full_name }}"
+                src="{{ post.image.url }}"
+                alt="{{ post.user.get_full_name }}"
             />
 
             <div class="message position-absolute bottom-0 start-50 translate-middle-x mb-4 blur-bg">
@@ -36,6 +36,10 @@
     </div>
 
     <footer class="post-footer">
-        {% include "friendlify/components/elements/input.html" with id="send_message" name="send_message" type="text" placeholder="Send message..."  class="form-control px-3 py-2 mt-3 rounded-5 fs-7" %}
+        {% if view_mode == "True" and post.user == request.user %}
+            <p class="mt-4 mb-3 rounded-5 fs-7">You have <b>0</b> reactions on your photo</p>
+        {% else %}
+            {% include "friendlify/components/elements/input.html" with id="send_message" name="send_message" type="text" placeholder="Send message..."  class="form-control px-3 py-2 mt-3 rounded-5 fs-7" %}
+        {% endif %}
     </footer>
 </section>

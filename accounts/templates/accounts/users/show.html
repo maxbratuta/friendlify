@@ -1,0 +1,51 @@
+{% extends "friendlify/base.html" %}
+{% load static %}
+
+{% block content %}
+    <main class="container my-5">
+        <div class="row gx-3 gy-3">
+            <div class="col col-lg-7 col-md-7 col-sm-12 col-12 order-lg-1 order-md-1 order-sm-2 order-2">
+                <div class="p-4 bg-light rounded">
+                    <div class="user__wrapper">
+                        <div class="user__header d-flex flex-row justify-content-between mb-4">
+                            <div class="d-flex flex-row">
+                                {% include "accounts/components/user-profile-avatar.html" with user=user width="96" height="96" %}
+
+                                <div class="d-flex flex-column align-content-between ms-4">
+                                    <h5 class="fw-bold">{{ user.get_full_name }}</h5>
+                                    <p class="mb-4">@{{ user.username }}</p>
+
+                                    <div class="d-flex flex-row">
+                                        <p class="m-0 me-5">
+                                            <span class="fw-bold">{{ user_friends_count }} / {{ max_user_friends }}</span> friends
+                                        </p>
+                                        <p class="m-0"><span class="fw-bold">{{ posts.count }}</span> photos</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="actions">
+                                {% if user == request.user %}
+                                {% include "friendlify/components/elements/link.html" with value="Edit" action_url="users.edit" id=user.username class="btn py-1 px-2 btn-dark fs-7" %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="user-gallery__wrapper">
+                            <div class="user-gallery__content">
+                                <div class="posts overflow-scroll mh-512">
+                                    {% include "posts/components/gallery-component.html" with posts=posts %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col col-lg-5 col-md-5 col-sm-12 col-12 order-lg-2 order-md-2 order-sm-1 order-1">
+                <div class="p-4 bg-light rounded">
+                    {% include "conversations/components/messages.html" %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock content %}

@@ -1,18 +1,18 @@
-<div class="user-avatar bg-white border rounded-5">
-    {% if avatar %}
+<div class="user-avatar w-fit-content h-fit-content m-1 bg-white border rounded-circle {% if width == "96" %}large-avatar{% else %}small-avatar{% endif %}">
+    {% if user.avatar %}
         <img
-            src="https://github.com/maxbratuta.png"
-            alt="mdo"
-            width="26"
-            height="26"
-            class="rounded-circle"
+            src="{{ user.avatar.url }}"
+            alt="{{ user.get_full_name }}"
+            width="{{ width|default:"26" }}"
+            height="{{ height|default:"26" }}"
+            class="rounded-circle m-1"
         />
     {% else %}
         <div
-            class="d-flex justify-content-center align-items-center m-1 bg-dark rounded-5"
-            style="width: 26px; height: 26px;"
+            class="d-flex justify-content-center align-items-center m-1 bg-dark rounded-circle adaptive-font"
+            style="width: {{ width|default:"26" }}px; height: {{ height|default:"26" }}px;"
         >
-            <span class="text-light fs-8">{{ initials }}</span>
+            <span class="text-light fw-bold">{{ user.initials }}</span>
         </div>
     {% endif %}
 </div>

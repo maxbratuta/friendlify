@@ -2,10 +2,10 @@
 
 <div class="message d-flex flex-row justify-content-between px-3 py-2 mb-3 bg-light-2 rounded hoverable-block">
     <div class="d-flex flex-row align-items-start rounded">
-        {% include "accounts/components/user-profile-avatar.html" with avatar=conversation.friend.avatar initials=conversation.friend.initials %}
+        {% include "accounts/components/user-profile-avatar.html" with user=conversation.friend %}
 
         <div class="d-flex flex-column align-content-between ms-2">
-            <span class="user-name fw-bold">{{ conversation.friend.full_name }}</span>
+            <span class="user-name fw-bold">{{ conversation.friend.get_full_name }}</span>
             <span>{{ conversation.last_message }}</span>
         </div>
     </div>

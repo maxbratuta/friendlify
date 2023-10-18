@@ -1,0 +1,40 @@
+{% if posts %}
+    <div class="grid text-center position-relative">
+        <div class="post-content overflow-hidden ratio ratio-1x1 image-grid-container">
+            {% for post in posts %}
+                <div class="content-container position-relative w-100 h-100">
+                    <div class="link-block">
+                        <img
+                            class="w-100 h-100 object-fit-contain rounded-3 hoverable-block"
+                            src="{{ post.image.url }}"
+                            alt="{{ post.user.full_name }}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#postModal{{ post.id }}"
+                        />
+                    </div>
+                </div>
+
+                {# #TODO : make modal changing dynamically with js #}
+                <div
+                    class="modal fade position-fixed"
+                    id="postModal{{ post.id }}"
+                    tabindex="-1"
+                    aria-labelledby="postModalLabel{{ post.id }}"
+                    aria-hidden="true"
+                >
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-body m-0">
+                                {% include "posts/components/post-card.html" with post=post view_mode="True" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div class="d-flex justify-content-center align-content-center bg-light-2 p-5 rounded">
+        <p class="m-0">No posts have been created yet.</p>
+    </div>
+{% endif %}

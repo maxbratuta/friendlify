@@ -13,3 +13,11 @@ class Post(TimestampModel):
 
     class Meta:
         ordering = ['-updated_at', '-created_at']
+
+    def formatted_created_at(self):
+        return self.created_at.strftime('%b %d')
+
+    def delete(self, *args, **kwargs):
+        storage, path = self.image.storage, self.image.path
+        super().delete(*args, **kwargs)
+        storage.delete(path)

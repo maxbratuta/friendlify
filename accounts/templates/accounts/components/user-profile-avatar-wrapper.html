@@ -1,0 +1,4 @@
+<div class="d-inline-flex flex-row align-items-center rounded">
+    {% include "accounts/components/user-profile-avatar.html" with user=user %}
+    <span class="user-name px-1 fw-bold hoverable-text">{{ user.get_full_name }}</span>
+</div>

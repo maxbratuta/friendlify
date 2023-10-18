@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.templatetags.static import static
 
+from accounts.models import User
 from posts.models import Post
 
 
-@login_required(login_url='login')
+@login_required(login_url="login")
 def feed(request):
     # posts = Post.objects.all()
 
@@ -15,84 +15,32 @@ def feed(request):
     # return ''.join(initials)
 
     friends_list = [
-        {
-            'id': 1,
-            'full_name': 'Ola Hombre',
-            'initials': 'OH',
-            'avatar': None,
-        },
-        {
-            'id': 2,
-            'full_name': 'Paulina Sombrero',
-            'initials': 'PS',
-            'avatar': None
-        },
-        {
-            'id': 3,
-            'full_name': 'Hose Horse',
-            'initials': 'HH',
-            'avatar': None
-        }
+        User.objects.filter(username="ola_hombre").get(),
+        User.objects.filter(username="paulina_sombrero").get(),
+        User.objects.filter(username="hose_horse").get(),
     ]
 
     conversations = [
         {
             'id': 200001,
-            'friend': {
-                'id': 1,
-                'full_name': 'Ola Hombre',
-                'initials': 'OH',
-                'avatar': None
-            },
+            'friend': User.objects.filter(username="ola_hombre").get(),
             'last_message': 'Gorgeous!',
         },
         {
             'id': 200002,
-            'friend': {
-                'id': 2,
-                'full_name': 'Paulina Sombrero',
-                'initials': 'PS',
-                'avatar': None
-            },
+            'friend': User.objects.filter(username="paulina_sombrero").get(),
             'last_message': 'Hola!',
         },
         {
             'id': 200003,
-            'friend': {
-                'id': 3,
-                'full_name': 'Hose Horse',
-                'initials': 'HH',
-                'avatar': None
-            },
+            'friend': User.objects.filter(username="hose_horse").get(),
             'last_message': 'Muy bien :)',
         },
     ]
 
     posts = [
-        {
-            'id': 100002,
-            'user': {
-                'id': 2,
-                'full_name': 'Paulina Sombrero',
-                'initials': 'PS',
-                'avatar': None
-            },
-            'image_url': static('images/posts/post-image-1.jpg'),
-            'description': 'El Camino de mi Almo',
-            'created_at': '2 Oct',
-        },
-        {
-            'id': 100001,
-            'user': {
-                'id': 1,
-                'full_name': 'Ola Hombre',
-                'initials': 'OH',
-                'avatar': None,
-            },
-            'image_url': static('images/posts/post-image-2.jpg'),
-            'description': 'Windy Day!',
-            'created_at': '1 Oct',
-        }
+        Post.objects.get(user__username="paulina_sombrero"),
+        Post.objects.get(user__username="ola_hombre"),
     ]
 
     # topics = Topic.objects.all()[0:5]
@@ -103,22 +51,14 @@ def feed(request):
     # context = {'rooms': rooms, 'topics': topics,
     #            'room_count': room_count, 'room_messages': room_messages}
 
-    return render(request, "posts/index.html", {
+    return render(request, "posts/feed.html", {
         "posts": posts,
         "conversations": conversations,
         "friends_list": friends_list,
-        "auth": {
-            "user": {
-                "id": request.user.id,
-                "full_name": request.user.get_full_name(),
-                "initials": "AD",
-                "avatar": request.user.avatar,
-            }
-        }
     })
 
 
-@login_required(login_url='login')
+@login_required(login_url="login")
 def gallery(request):
     # posts = Post.objects.all()
 
@@ -128,84 +68,32 @@ def gallery(request):
     # return ''.join(initials)
 
     friends_list = [
-        {
-            'id': 1,
-            'full_name': 'Ola Hombre',
-            'initials': 'OH',
-            'avatar': None,
-        },
-        {
-            'id': 2,
-            'full_name': 'Paulina Sombrero',
-            'initials': 'PS',
-            'avatar': None
-        },
-        {
-            'id': 3,
-            'full_name': 'Hose Horse',
-            'initials': 'HH',
-            'avatar': None
-        }
+        User.objects.filter(username="ola_hombre").get(),
+        User.objects.filter(username="paulina_sombrero").get(),
+        User.objects.filter(username="hose_horse").get(),
     ]
 
     conversations = [
         {
             'id': 200001,
-            'friend': {
-                'id': 1,
-                'full_name': 'Ola Hombre',
-                'initials': 'OH',
-                'avatar': None
-            },
+            'friend': User.objects.filter(username="ola_hombre").get(),
             'last_message': 'Gorgeous!',
         },
         {
             'id': 200002,
-            'friend': {
-                'id': 2,
-                'full_name': 'Paulina Sombrero',
-                'initials': 'PS',
-                'avatar': None
-            },
+            'friend': User.objects.filter(username="paulina_sombrero").get(),
             'last_message': 'Hola!',
         },
         {
             'id': 200003,
-            'friend': {
-                'id': 3,
-                'full_name': 'Hose Horse',
-                'initials': 'HH',
-                'avatar': None
-            },
+            'friend': User.objects.filter(username="hose_horse").get(),
             'last_message': 'Muy bien :)',
         },
     ]
 
     posts = [
-        {
-            'id': 100002,
-            'user': {
-                'id': 2,
-                'full_name': 'Paulina Sombrero',
-                'initials': 'PS',
-                'avatar': None
-            },
-            'image_url': static('images/posts/post-image-1.jpg'),
-            'description': 'El Camino de mi Almo',
-            'created_at': '2 Oct',
-        },
-        {
-            'id': 100001,
-            'user': {
-                'id': 1,
-                'full_name': 'Ola Hombre',
-                'initials': 'OH',
-                'avatar': None,
-            },
-            'image_url': static('images/posts/post-image-2.jpg'),
-            'description': 'Windy Day!',
-            'created_at': '1 Oct',
-        }
+        Post.objects.get(user__username="paulina_sombrero"),
+        Post.objects.get(user__username="ola_hombre"),
     ]
 
     # topics = Topic.objects.all()[0:5]
@@ -219,13 +107,5 @@ def gallery(request):
     return render(request, "posts/gallery.html", {
         "posts": posts,
         "conversations": conversations,
-        "friends_list": friends_list,
-        "auth": {
-            "user": {
-                "id": request.user.id,
-                "full_name": request.user.get_full_name(),
-                "initials": "AD",
-                "avatar": request.user.avatar,
-            }
-        }
+        "friends_list": friends_list
     })
