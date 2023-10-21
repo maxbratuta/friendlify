@@ -1,5 +1,6 @@
 {% extends "friendlify/base.html" %}
 {% load static %}
+{% load icon %}
 
 {% block content %}
     <main class="container my-5">
@@ -25,7 +26,10 @@
                             </div>
                             <div class="actions">
                                 {% if user == request.user %}
-                                {% include "friendlify/components/elements/link.html" with value="Edit" action_url="users.edit" id=user.username class="btn py-1 px-2 btn-dark fs-7" %}
+                                    <a
+                                        href="{% url "users.edit" user.username %}"
+                                        class="btn py-1 px-2 btn-dark fs-7"
+                                    >Edit</a>
                                 {% endif %}
                             </div>
                         </div>
@@ -33,7 +37,7 @@
                         <div class="user-gallery__wrapper">
                             <div class="user-gallery__content">
                                 <div class="posts overflow-scroll mh-512">
-                                    {% include "posts/components/gallery-component.html" with posts=posts %}
+                                    {% include "posts/components/gallery-grid.html" with posts=posts %}
                                 </div>
                             </div>
                         </div>

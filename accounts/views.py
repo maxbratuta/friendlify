@@ -10,7 +10,7 @@ from .forms import UserStoreForm, UserForm
 
 def login_page(request):
     if request.user.is_authenticated:
-        return redirect("feed")
+        return redirect("posts.index")
 
     if request.method == "POST":
         email = request.POST.get("email", "").lower()
@@ -28,7 +28,7 @@ def login_page(request):
                 request.session.set_expiry(86400 * 30)  # 30 days
 
             login(request, user)
-            return redirect("feed")
+            return redirect("posts.index")
         else:
             messages.error(request, "Invalid password")
             return redirect("login")
@@ -38,7 +38,7 @@ def login_page(request):
 
 def register_page(request):
     if request.user.is_authenticated:
-        return redirect("feed")
+        return redirect("posts.index")
 
     if request.method == "POST":
         form = UserStoreForm(request.POST)
@@ -49,7 +49,7 @@ def register_page(request):
             user.save()
 
             login(request, user)
-            return redirect("feed")
+            return redirect("posts.index")
         else:
             error_messages = []
 
@@ -103,7 +103,7 @@ def show(request, username):
 @login_required(login_url="login")
 def edit(request, username):
     if username != request.user.username:
-        return redirect("feed")
+        return redirect("posts.index")
 
     if request.method == "POST":
         form = UserForm(request.POST, request.FILES, instance=request.user)

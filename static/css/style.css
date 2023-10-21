@@ -9,6 +9,7 @@
 .w-fit-content {
     width: fit-content;
 }
+
 .w-max-content {
     width: max-content;
 }
@@ -109,6 +110,7 @@ a.nav-link:hover {
 .user-avatar.small-avatar .adaptive-font span {
     font-size: 1vw;
 }
+
 .user-avatar.large-avatar .adaptive-font span {
     font-size: 4vw;
 }
@@ -122,4 +124,51 @@ a.nav-link:hover {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 0.875rem;
+}
+
+#video, #capturedPhoto {
+    width: 466px;
+    height: 466px;
+    object-fit: cover;
+}
+
+#video {
+    transform: scaleX(-1);
+}
+
+
+.post-message {
+    width: min-content;
+    min-width: fit-content;
+}
+
+#post_message::placeholder {
+    color: white;
+    opacity: 1;
+}
+
+#post_message:focus {
+    box-shadow: none;
+    border: 0;
+}
+
+#post_message::-ms-input-placeholder {
+    color: white;
+}
+
+.loader {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+
+.remove-dropdown-icon.dropdown-toggle::after {
+    display: none;
 }

@@ -1,5 +1,6 @@
 {% extends "friendlify/base.html" %}
 {% load static %}
+{% load icon %}
 {% load form_tags %}
 
 
@@ -9,11 +10,14 @@
             <div class="d-flex flex-row align-items-center mb-4-5">
                 <ul class="nav">
                     <li class="nav-item rounded">
-                        {% include "friendlify/components/elements/link.html" with value="" action_url="users.show" id=request.user.username class="nav-link me-2 p-1 text-dark rounded" icon="chevron-left" icon_size="24" before="True" %}
+                        <a
+                            href="{% url "users.show" request.user.username %}"
+                            class="nav-link me-2 p-1 text-dark rounded"
+                        >{% icon "chevron-left" %}</a>
                     </li>
                 </ul>
 
-                <h1 class="h4 fw-normal fw-bold mb-1">Edit your profile</h1>
+                <h1 class="h4 fw-normal fw-bold m-0">Edit your profile</h1>
             </div>
 
             <form
@@ -156,7 +160,12 @@
                     <div class="col"></div>
                     <div class="col d-flex flex-row">
                         <button type="submit" class="btn btn-dark w-100">Update</button>
-                        {% include "friendlify/components/elements/link.html" with value="Cancel" action_url="users.show" id=user.username class="d-flex justify-content-center align-items-center btn btn-outline-dark w-100 py-1 px-2 ms-3" %}
+
+                        <a
+                            href="{% url "users.show" user.username %}"
+                            class="d-flex justify-content-center align-items-center btn btn-outline-dark w-100 py-1 px-2 ms-3"
+                            data-bs-toggle="modal"
+                        >Cancel</a>
                     </div>
                 </div>
             </form>

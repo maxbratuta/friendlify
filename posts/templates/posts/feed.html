@@ -1,4 +1,6 @@
 {% extends "friendlify/base.html" %}
+{% load static %}
+{% load icon %}
 
 {% block content %}
     <main class="container my-5">
@@ -7,23 +9,109 @@
                 <div class="p-4 bg-light rounded">
                     <div class="feed__wrapper">
                         <div class="feed__header d-flex flex-row justify-content-between mb-4">
-                            <h2 class="title h4 m-0">Feed</h2>
-                            <div class="filter">
-                                {% include "friendlify/components/elements/link.html" with value="Everyone" action_url="feed" class="btn py-1 px-2 btn-light border rounded-5 fs-7" icon="chevron-down" icon_size="18" before="False" %}
+                            <div class="d-inline-flex flex-row align-items-center">
+                                {% if "gallery" in request.get_full_path %}
+                                    <a
+                                        href="?view=feed"
+                                        class="me-2 d-inline-flex justify-content-center align-items-center text-dark"
+                                    >{% icon "image" %}</a>
+
+                                    <h2 class="title h4 m-0">Gallery</h2>
+                                {% else %}
+                                    <a
+                                        href="?view=gallery"
+                                        class="me-2 d-inline-flex justify-content-center align-items-center text-dark"
+                                    >{% icon "grid" %}</a>
+
+                                    <h2 class="title h4 m-0">Feed</h2>
+                                {% endif %}
+
                             </div>
+
+                            <div class="filter">
+                                <div class="dropdown d-flex flex-row text-end">
+                                    <a
+                                        href="#"
+                                        class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle btn py-1 px-2 btn-light border rounded-5 fs-7"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                    >Everyone</a>
+
+                                    <ul class="dropdown-menu dropdown-menu-start mt-1 text-small">
+                                        <li>
+                                            <a class="d-inline-flex dropdown-item py-1" href="#">
+                                                <div class="d-inline-flex flex-row align-items-center rounded">
+                                                    <div class="user-avatar w-fit-content h-fit-content m-1 bg-white border rounded-circle small-avatar">
+                                                        <div
+                                                            class="d-flex justify-content-center align-items-center m-1 bg-light-2 rounded-circle adaptive-font"
+                                                            style="width: 26px; height: 26px;"
+                                                        >
+                                                            <span class="text-dark d-flex flex-row align-self-center">
+                                                                {% icon "users" height="14" width="14" %}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <span class="user-name px-1 fw-bold hoverable-text">Everyone</span>
+                                                </div>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <hr class="dropdown-divider"/>
+                                        </li>
+
+                                        {% if friends %}
+                                            {% for friend in friends %}
+                                                <li>
+                                                    <a class="dropdown-item py-1" href="#">
+                                                        {% include 'accounts/components/user-profile-avatar-wrapper.html' with user=friend %}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <li class="d-inline-flex flex-column w-max-content">
+                                                <span class="px-4 py-1">You don't have friends. So sad.</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+
                             <div class="actions">
-                                {% include "friendlify/components/elements/link.html" with value="Add post" action_url="feed" class="btn py-1 px-2 btn-dark fs-7" icon="plus" icon_size="18" %}
+                                <a
+                                    href="#takeAShot"
+                                    class="d-inline-flex btn py-1 px-2 btn-dark fs-7"
+                                    data-bs-toggle="modal"
+                                >
+                                    <span class="d-flex flex-row align-self-center pe-1">
+                                        {% icon "plus" height="18" width="18" %}
+                                    </span>
+                                    <span>Add post</span>
+                                </a>
                             </div>
                         </div>
+
                         <div class="feed__content">
                             <div class="row">
-                                <div class="col col-xl-2 col-lg-1 col-12"></div>
-                                <div class="posts overflow-scroll mh-512 col col-xl-8 col-lg-10 col-12">
-                                    {% for post in posts %}
-                                        {% include "posts/components/post-card.html" with post=post additional_classes="mb-4" %}
-                                    {% endfor %}
-                                </div>
-                                <div class="col col-xl-2 col-lg-1 col-12"></div>
+                                {% if "gallery" in request.get_full_path %}
+                                    <div class="col posts overflow-scroll mh-512 ">
+                                        {% include "posts/components/gallery-grid.html" with posts=posts %}
+                                    </div>
+                                {% else %}
+                                    <div class="col col-xl-2 col-lg-1 col-12"></div>
+                                    <div class="posts overflow-scroll mh-512 col col-xl-8 col-lg-10 col-12">
+                                        {% if posts %}
+                                            {% for post in posts %}
+                                                {% include "posts/components/post-card.html" with post=post additional_classes="mb-4" %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="d-flex justify-content-center align-content-center bg-light-2 p-5 rounded">
+                                                <p class="m-0">No posts have been created yet.</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col col-xl-2 col-lg-1 col-12"></div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -37,4 +125,70 @@
             </div>
         </div>
     </main>
+
+    <div id="takeAShot" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="takeAShotLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="video-container position-relative">
+                        <div id="videoLoader" class="loader">
+                          <div class="spinner-border" role="status"></div>
+                        </div>
+
+                        <video id="video" class="rounded-5" autoplay playsinline></video>
+                    </div>
+                </div>
+
+                <div class="modal-footer justify-content-center">
+                    <button id="capture" class="d-flex btn btn-dark" disabled>
+                        <span class="d-flex flex-row align-self-center pe-2">
+                            {% icon "camera" height="18" width="18" %}
+                        </span>
+                        <span>Take a photo</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addPost" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addPostLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{% url "posts.store" %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="post-content overflow-hidden ratio ratio-1x1">
+                            <div id="postPhoto" class="content-container position-relative w-100 h-100">
+                                <img
+                                    id="capturedPhoto"
+                                    class="w-100 h-100 object-fit-contain rounded-5"
+                                    alt="Captured Photo"
+                                    src=""
+                                />
+
+                                <input type="file" id="capturedPhotoInput" name="capturedPhoto" class="d-none" />
+
+                                <div class="post-message position-absolute bottom-0 start-50 translate-middle-x mb-4 blur-bg">
+                                    {% include "friendlify/components/elements/input.html" with id="post_message" name="post_message" type="text" placeholder="Add a message" class="form-control p-1 rounded-pill bg-light bg-opacity-50 border-0 text-white text-center fs-7 fw-normal" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-outline-dark"
+                            data-bs-target="#takeAShot"
+                            data-bs-toggle="modal"
+                            data-bs-dismiss="modal"
+                        >Back</button>
+
+                        <button class="btn btn-dark" type="submit">Add post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

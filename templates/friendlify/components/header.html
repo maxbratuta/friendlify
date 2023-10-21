@@ -7,26 +7,20 @@
                 {% if user.is_authenticated %}
                     <ul class="nav ms-4">
                         <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/feed/' %} active{% endif %}"
-                               href="{% url 'feed' %}"
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == "/feed/" %} active{% endif %}"
+                               href="{% url "posts.index" %}"
                             >Feed</a>
                         </li>
 
                         <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/gallery/' %} active{% endif %}"
-                               href="{% url 'gallery' %}"
-                            >Gallery</a>
-                        </li>
-
-                        <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/messages/' %} active{% endif %}"
-                               href="{% url 'register' %}"
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == "/messages/" %} active{% endif %}"
+                               href="{% url "register" %}"
                             >Messages</a>
                         </li>
 
                         <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/friends/' %} active{% endif %}"
-                               href="{% url 'register' %}"
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == "/friends/" %} active{% endif %}"
+                               href="{% url "register" %}"
                             >Friends</a>
                         </li>
                     </ul>
@@ -76,14 +70,14 @@
                 {% else %}
                     <ul class="nav">
                         <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/login/' %} active{% endif %}"
-                               href="{% url 'login' %}"
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == "/login/" %} active{% endif %}"
+                               href="{% url "login" %}"
                             >Login</a>
                         </li>
 
                         <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == '/register/' %} active{% endif %}"
-                               href="{% url 'register' %}"
+                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == "/register/" %} active{% endif %}"
+                               href="{% url "register" %}"
                             >Sign up</a>
                         </li>
                     </ul>

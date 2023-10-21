@@ -1,5 +1,6 @@
 <!doctype html>
 {% load static %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -19,15 +20,11 @@
     {% block content %}
     {% endblock %}
 
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        const toastElList = [].slice.call(document.querySelectorAll('.toast'))
-        const toastList = toastElList.map(function (toastEl) {
-          return new bootstrap.Toast(toastEl)
-        })
-
-        toastList.forEach(toast => toast.show()); // This shows all toasts on the page
-    </script>
+    <script src="{% static "js/friendlify/index.js" %}"></script>
+    <script src="{% static "js/posts/index.js" %}"></script>
+    <script src="{% static "js/posts/photobooth.js" %}"></script>
 </body>
 </html>
