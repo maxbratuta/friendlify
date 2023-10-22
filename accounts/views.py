@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -5,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from rest_framework.generics import get_object_or_404
 
+from posts.models import Post
 from .models import User, Friendship
 from .forms import UserStoreForm, UserForm
 
@@ -71,9 +73,7 @@ def logout_user(request):
 
 
 @login_required(login_url="login")
-def show(request, username):
-    user = request.user if username == request.user.username else get_object_or_404(User, username=username)
-
+def user_show(request, username):
     conversations = [
         {
             'id': 200001,
@@ -91,20 +91,68 @@ def show(request, username):
             'last_message': 'Muy bien :)',
         },
     ]
+    conversations = []  # TODO : get all conversations with friends
+
+    is_friendship_received = False
+    is_friendship_sent = False
+    is_friends = False
+
+    posts = []
+    friends_count = 0
+
+    friendships = Friendship.get_accepted_friendships(user=request.user)
+
+    if username == request.user.username:
+        user = request.user
+        posts = user.post_set.all()
+        friends_count = friendships.count()
+    else:
+        user = get_object_or_404(User, username=username)
+
+        is_friendship_received = Friendship.objects.filter(
+            sender=user,
+            receiver=request.user,
+            status=Friendship.PENDING
+        ).exists()
+
+        is_friendship_sent = Friendship.objects.filter(
+            sender=request.user,
+            receiver=user,
+            status=Friendship.PENDING
+        ).exists()
+
+        if not is_friendship_received and not is_friendship_sent:
+            specific_friendship = Friendship.objects.filter(
+                Q(sender=request.user, receiver=user) |
+                Q(sender=user, receiver=request.user),
+                status=Friendship.ACCEPTED
+            )
+
+            is_friends = specific_friendship.exists()
+
+            if is_friends:
+                posts = Post.get_posts(friendships=specific_friendship, exclude_for_user=request.user)
 
     return render(request, "accounts/users/show.html", {
         "user": user,
-        "posts": user.post_set.all(),
-        "conversations": conversations,
-        "user_friends_count": 0,
-        "max_user_friends": 20,
+        "posts": posts,
+        "conversations": conversations,  # TODO : CONVERSATIONS
+
+        "friendship": {
+            'friends_count': friends_count,
+            "user_friends_limit": Friendship.USER_FRIENDS_LIMIT,
+
+            "is_pending_received_friendship": is_friendship_received,
+            "is_pending_sent_friendship": is_friendship_sent,
+            "is_friend": is_friends,
+        }
     })
 
 
 @login_required(login_url="login")
-def edit(request, username):
+def user_edit(request, username):
     if username != request.user.username:
-        return redirect("posts.index")
+        return redirect("users.show", username)
 
     if request.method == "POST":
         form = UserForm(request.POST, request.FILES, instance=request.user)
@@ -127,38 +175,55 @@ def edit(request, username):
 
 
 @login_required(login_url="login")
-def destroy(request):
+def user_destroy(request):
     request.user.delete()
     return redirect("home")
 
 
 @login_required(login_url="login")
-def send_friend_request(request, receiver_id):
+def send_friend_request(request, username):
     if request.method == "POST":
-        sender = request.user
-        receiver = get_object_or_404(User, pk=receiver_id)
+        friendships = Friendship.get_accepted_friendships(user=request.user)
 
-        friendship_request = Friendship(sender=sender, receiver=receiver)
-        friendship_request.save()
+        if friendships.count() < Friendship.USER_FRIENDS_LIMIT:
+            Friendship.objects.get_or_create(
+                sender=request.user,
+                receiver=get_object_or_404(User, username=username)
+            )
+        else:
+            messages.error(request, "Allowed number of friends exceeded. You can have up to 20 friends at a time")
 
         # TODO : send notification to receiver
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required(login_url="login")
-def accept_friend_request(request, request_id):
+def accept_friend_request(request, username):
     if request.method == "POST":
-        friendship_request = get_object_or_404(Friendship, pk=request_id)
-        friendship_request.accept()
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-        # return redirect('some-view-name')  # замініть на потрібний вам вигляд
+        friendship = get_object_or_404(
+            Friendship,
+            sender=get_object_or_404(User, username=username),
+            receiver=request.user
+        )
+
+        friendship.accept()
+        # TODO : send notification to receiver
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required(login_url="login")
-def decline_friend_request(request, request_id):
+def friendship_destroy(request, username):
     if request.method == "POST":
-        friendship_request = get_object_or_404(Friendship, pk=request_id)
-        friendship_request.decline()
+        user = get_object_or_404(User, username=username)
 
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-        # return redirect('some-view-name')  # замініть на потрібний вам вигляд
+        friendship = get_object_or_404(
+            Friendship,
+            Q(sender=request.user, receiver=user) |
+            Q(sender=user, receiver=request.user)
+        )
+
+        friendship.destroy()
+        # TODO : send notification to receiver
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))

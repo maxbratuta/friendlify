@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Q
 
 from friendlify.models import TimestampModel
 
@@ -27,6 +28,8 @@ class User(AbstractUser, TimestampModel):
 
 
 class Friendship(TimestampModel):
+    USER_FRIENDS_LIMIT = 20
+
     PENDING = 0
     ACCEPTED = 1
 
@@ -43,7 +46,7 @@ class Friendship(TimestampModel):
         self.status = self.ACCEPTED
         self.save()
 
-    def decline(self):
+    def destroy(self):
         self.delete()
 
     def is_pending(self):
@@ -51,3 +54,19 @@ class Friendship(TimestampModel):
 
     def is_accepted(self):
         return self.status == self.ACCEPTED
+
+    @classmethod
+    def get_accepted_friendships(cls, user):
+        return cls.objects.filter(
+            Q(sender=user) | Q(receiver=user),
+            status=cls.ACCEPTED
+        )
+
+    @staticmethod
+    def get_friends(friendships, user):
+        return [
+            friendship.sender
+            if friendship.receiver == user
+            else friendship.receiver
+            for friendship in friendships
+        ]

@@ -95,7 +95,7 @@
                             <div class="row">
                                 {% if "gallery" in request.get_full_path %}
                                     <div class="col posts overflow-scroll mh-512 ">
-                                        {% include "posts/components/gallery-grid.html" with posts=posts %}
+                                        {% include "posts/components/gallery-grid.html" with posts=posts friendship=friendship user=user %}
                                     </div>
                                 {% else %}
                                     {% if posts %}
@@ -109,7 +109,7 @@
                                     {% else %}
                                         <div class="col">
                                             <div class="d-flex justify-content-center align-content-center bg-light-2 p-5 rounded">
-                                                <p class="m-0">No posts have been created yet.</p>
+                                                <p class="m-0">No shared memories have been created yet.</p>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -122,7 +122,7 @@
 
             <div class="col col-lg-5 col-md-5 col-sm-12 col-12 order-lg-2 order-md-2 order-sm-1 order-1">
                 <div class="p-4 bg-light rounded">
-                    {% include "conversations/components/messages.html" %}
+                    {% include "conversations/components/messages.html" with conversations=conversations %}
                 </div>
             </div>
         </div>

@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.db import models
+from django.db.models import Q
 
 from friendlify.models import TimestampModel
 from accounts.models import User
@@ -26,3 +27,25 @@ class Post(TimestampModel):
         storage, path = self.image.storage, self.image.path
         super().delete(*args, **kwargs)
         storage.delete(path)
+
+    @classmethod
+    def get_posts(cls, friendships, user=None, exclude_for_user=None):
+        friendship_dates = {}
+
+        for friendship in friendships:
+            if friendship.sender not in friendship_dates:
+                friendship_dates[friendship.sender] = friendship.created_at
+            if friendship.receiver not in friendship_dates:
+                friendship_dates[friendship.receiver] = friendship.created_at
+
+        query = Q()
+
+        if user:
+            query = Q(user=user)
+
+        for friend, date in friendship_dates.items():
+            if exclude_for_user and exclude_for_user == friend:
+                continue
+            query |= Q(user=friend, created_at__gte=date)
+
+        return cls.objects.filter(query)

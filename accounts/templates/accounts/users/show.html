@@ -16,28 +16,95 @@
                                     <h5 class="fw-bold">{{ user.get_full_name }}</h5>
                                     <p class="mb-4">@{{ user.username }}</p>
 
-                                    <div class="d-flex flex-row">
-                                        <p class="m-0 me-5">
-                                            <span class="fw-bold">{{ user_friends_count }} / {{ max_user_friends }}</span> friends
-                                        </p>
-                                        <p class="m-0"><span class="fw-bold">{{ posts.count }}</span> photos</p>
-                                    </div>
+                                    {% if friendship.is_friend or user == request.user %}
+                                        <div class="d-flex flex-row">
+                                            {% if user == request.user %}
+                                                <p class="m-0 me-5">
+                                                    <span class="fw-bold">{{ friendship.friends_count }} / {{ friendship.user_friends_limit }}</span> friends
+                                                </p>
+                                            {% endif %}
+
+                                            <p class="m-0"><span class="fw-bold">{{ posts.count }}</span> photos</p>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
+
                             <div class="actions">
                                 {% if user == request.user %}
                                     <a
                                         href="{% url "users.edit" user.username %}"
                                         class="btn py-1 px-2 btn-dark fs-7"
                                     >Edit</a>
+                                {% else %}
+                                    {% if friendship.is_friend %}
+                                        <a href="#" class="btn py-1 px-2 btn-dark fs-7">Send Message</a>
+
+                                        <a
+                                            href="#"
+                                            class="btn py-1 px-2 btn-danger fs-7"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#removeFriend"
+                                        >Remove Friend</a>
+                                    {% elif friendship.is_pending_received_friendship %}
+                                        <form
+                                            action="{% url "friendship.accept_request" user.username %}"
+                                            method="POST"
+                                            class="d-inline"
+                                        >
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="btn py-1 px-2 me-2 btn-primary fs-7"
+                                            >Confirm</button>
+                                        </form>
+                                        <form
+                                            action="{% url "friendship.destroy" user.username %}"
+                                            method="POST"
+                                            class="d-inline"
+                                        >
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="btn py-1 px-2 btn-outline-danger fs-7"
+                                            >Delete Request</button>
+                                        </form>
+                                    {% elif friendship.is_pending_sent_friendship %}
+                                        <form
+                                            action="{% url "friendship.destroy" user.username %}"
+                                            method="POST"
+                                        >
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="btn py-1 px-2 btn-warning fs-7"
+                                            >Cancel Friend Request</button>
+                                        </form>
+                                    {% else %}
+                                        <form
+                                            action="{% url "friendship.send_request" user.username %}"
+                                            method="POST"
+                                        >
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="btn py-1 px-2 btn-dark fs-7"
+                                            >Send Friend Request</button>
+                                        </form>
+                                    {% endif %}
                                 {% endif %}
                             </div>
+
                         </div>
 
                         <div class="user-gallery__wrapper">
                             <div class="user-gallery__content">
                                 <div class="posts overflow-scroll mh-512">
-                                    {% include "posts/components/gallery-grid.html" with posts=posts %}
+                                    {% include "posts/components/gallery-grid.html" with posts=posts friendship=friendship user=user %}
                                 </div>
                             </div>
                         </div>
@@ -47,9 +114,39 @@
 
             <div class="col col-lg-5 col-md-5 col-sm-12 col-12 order-lg-2 order-md-2 order-sm-1 order-1">
                 <div class="p-4 bg-light rounded">
-                    {% include "conversations/components/messages.html" %}
+                    {% include "conversations/components/messages.html" with conversations=conversations %}
                 </div>
             </div>
         </div>
     </main>
+
+    {% if friendship.is_friend %}
+        <div
+            class="modal fade position-fixed"
+            id="removeFriend"
+            tabindex="-1"
+            aria-labelledby="removeFriendLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="removeFriendLabel">Remove Friend</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body m-0">
+                        <p class="m-0">Are you sure you want to remove <b>{{ user.get_full_name}}</b> from your friend list?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="{% url "friendship.destroy" user.username %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">Remove</button>
+                        </form>
+                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock content %}

@@ -34,7 +34,15 @@
         </div>
     </div>
 {% else %}
-    <div class="d-flex justify-content-center align-content-center bg-light-2 p-5 rounded">
-        <p class="m-0">No posts have been created yet.</p>
+    <div class="d-flex justify-content-center align-content-center bg-light-2 p-5 rounded text-center">
+        {% if friendship.is_friend %}
+            <p class="m-0">No shared memories with <b>{{ user.get_full_name }}</b> have been created yet.</p>
+        {% else %}
+            {% if user == request.user %}
+                <p class="m-0">No posts have been created yet.</p>
+            {% else %}
+                <p class="m-0">To create shared memories with <b>{{ user.get_full_name }}</b>, send him a friend request.</p>
+            {% endif %}
+        {% endif %}
     </div>
 {% endif %}

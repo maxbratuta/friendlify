@@ -5,7 +5,7 @@
     <div class="messages__content">
         <div class="row">
             <div class="col col-12 mh-512 overflow-scroll">
-                {% include "conversations/components/messages-block.html" %}
+                {% include "conversations/components/messages-block.html" with conversations=conversations %}
             </div>
         </div>
     </div>
