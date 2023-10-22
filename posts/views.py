@@ -8,7 +8,7 @@ from posts.models import Post
 
 
 @login_required(login_url="login")
-def feed(request):
+def index(request):
     # posts = Post.objects.all()
 
 
@@ -46,6 +46,8 @@ def feed(request):
     ]
 
     posts = Post.objects.all()
+
+    posts = []
 
     # topics = Topic.objects.all()[0:5]
     # room_count = rooms.count()
@@ -86,7 +88,7 @@ def store(request):
 @login_required(login_url="login")
 def destroy(request, id):
     if request.method == "POST":
-        post = get_object_or_404(Post, id=id)
+        post = get_object_or_404(Post, pk=id)
 
         if request.user != post.user:
             return HttpResponse("You do not have permission to perform this action.", status=403)

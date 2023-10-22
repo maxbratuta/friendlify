@@ -98,19 +98,21 @@
                                         {% include "posts/components/gallery-grid.html" with posts=posts %}
                                     </div>
                                 {% else %}
-                                    <div class="col col-xl-2 col-lg-1 col-12"></div>
-                                    <div class="posts overflow-scroll mh-512 col col-xl-8 col-lg-10 col-12">
-                                        {% if posts %}
+                                    {% if posts %}
+                                        <div class="col col-xl-2 col-lg-1 col-12"></div>
+                                        <div class="posts overflow-scroll mh-512 col col-xl-8 col-lg-10 col-12">
                                             {% for post in posts %}
                                                 {% include "posts/components/post-card.html" with post=post additional_classes="mb-4" %}
                                             {% endfor %}
-                                        {% else %}
+                                        </div>
+                                        <div class="col col-xl-2 col-lg-1 col-12"></div>
+                                    {% else %}
+                                        <div class="col">
                                             <div class="d-flex justify-content-center align-content-center bg-light-2 p-5 rounded">
                                                 <p class="m-0">No posts have been created yet.</p>
                                             </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="col col-xl-2 col-lg-1 col-12"></div>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>

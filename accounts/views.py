@@ -1,10 +1,11 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from rest_framework.generics import get_object_or_404
 
-from .models import User
+from .models import User, Friendship
 from .forms import UserStoreForm, UserForm
 
 
@@ -129,3 +130,35 @@ def edit(request, username):
 def destroy(request):
     request.user.delete()
     return redirect("home")
+
+
+@login_required(login_url="login")
+def send_friend_request(request, receiver_id):
+    if request.method == "POST":
+        sender = request.user
+        receiver = get_object_or_404(User, pk=receiver_id)
+
+        friendship_request = Friendship(sender=sender, receiver=receiver)
+        friendship_request.save()
+
+        # TODO : send notification to receiver
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required(login_url="login")
+def accept_friend_request(request, request_id):
+    if request.method == "POST":
+        friendship_request = get_object_or_404(Friendship, pk=request_id)
+        friendship_request.accept()
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        # return redirect('some-view-name')  # замініть на потрібний вам вигляд
+
+
+@login_required(login_url="login")
+def decline_friend_request(request, request_id):
+    if request.method == "POST":
+        friendship_request = get_object_or_404(Friendship, pk=request_id)
+        friendship_request.decline()
+
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        # return redirect('some-view-name')  # замініть на потрібний вам вигляд

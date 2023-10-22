@@ -25,7 +25,29 @@ class User(AbstractUser, TimestampModel):
     def initials(self):
         return ''.join([name[0].upper() for name in [self.first_name, self.last_name] if name])
 
-# class Friendship(models.Model):
-#     sender = models.ForeignKey(User, related_name='sent_requests', on_delete=models.CASCADE)
-#     receiver = models.ForeignKey(User, related_name='received_requests', on_delete=models.CASCADE)
-#     created_at = models.DateTimeField(auto_now_add=True)
+
+class Friendship(TimestampModel):
+    PENDING = 0
+    ACCEPTED = 1
+
+    STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (ACCEPTED, 'Accepted'),
+    ]
+
+    sender = models.ForeignKey(User, related_name='sent_requests', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_requests', on_delete=models.CASCADE)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=PENDING)
+
+    def accept(self):
+        self.status = self.ACCEPTED
+        self.save()
+
+    def decline(self):
+        self.delete()
+
+    def is_pending(self):
+        return self.status == self.PENDING
+
+    def is_accepted(self):
+        return self.status == self.ACCEPTED
