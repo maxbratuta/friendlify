@@ -12,14 +12,14 @@
                             <div class="d-inline-flex flex-row align-items-center">
                                 {% if "gallery" in request.get_full_path %}
                                     <a
-                                        href="?view=feed"
+                                        href="?view=feed{% if filter.username %}&username={{ filter.username }}{% endif %}"
                                         class="me-2 d-inline-flex justify-content-center align-items-center text-dark"
                                     >{% icon "image" %}</a>
 
                                     <h2 class="title h4 m-0">Gallery</h2>
                                 {% else %}
                                     <a
-                                        href="?view=gallery"
+                                        href="?view=gallery{% if filter.username %}&username={{ filter.username }}{% endif %}"
                                         class="me-2 d-inline-flex justify-content-center align-items-center text-dark"
                                     >{% icon "grid" %}</a>
 
@@ -31,15 +31,20 @@
                             <div class="filter">
                                 <div class="dropdown d-flex flex-row text-end">
                                     <a
-                                        href="#"
+                                        href="
+                                            {% if filter.view %}
+                                                ?view={{ filter.view }}
+                                            {% else %}
+                                                {% url "posts.index" %}
+                                            {% endif %}"
                                         class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle btn py-1 px-2 btn-light border rounded-5 fs-7"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
-                                    >Everyone</a>
+                                    >{% if filter.user_full_name %}{{ filter.user_full_name }}{% else %}Everyone{% endif %} </a>
 
                                     <ul class="dropdown-menu dropdown-menu-start mt-1 text-small">
                                         <li>
-                                            <a class="d-inline-flex dropdown-item py-1" href="#">
+                                            <a class="d-inline-flex dropdown-item py-1" href="{% url "posts.index" %}{% if filter.view %}?view={{ filter.view }}{% endif %}">
                                                 <div class="d-inline-flex flex-row align-items-center rounded">
                                                     <div class="user-avatar w-fit-content h-fit-content m-1 bg-white border rounded-circle small-avatar">
                                                         <div
@@ -63,16 +68,18 @@
                                         {% if friends %}
                                             {% for friend in friends %}
                                                 <li>
-                                                    <a class="dropdown-item py-1" href="#">
+                                                    <a class="dropdown-item py-1" href="?username={{ friend.username }}{% if filter.view %}&view={{ filter.view }}{% endif %}">
                                                         {% include 'accounts/components/user-profile-avatar-wrapper.html' with user=friend %}
                                                     </a>
                                                 </li>
                                             {% endfor %}
-                                        {% else %}
-                                            <li class="d-inline-flex flex-column w-max-content">
-                                                <span class="px-4 py-1">You have no friends yet</span>
-                                            </li>
                                         {% endif %}
+
+                                        <li>
+                                            <a class="dropdown-item py-1" href="?username={{ request.user.username }}{% if filter.view %}&view={{ filter.view }}{% endif %}">
+                                                {% include 'accounts/components/user-profile-avatar-wrapper.html' with user=request.user %}
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>

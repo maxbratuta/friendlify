@@ -29,7 +29,7 @@ class Post(TimestampModel):
         storage.delete(path)
 
     @classmethod
-    def get_posts(cls, friendship_dates: dict, user: User = None, exclude_for_user: User = None):
+    def get_posts(cls, friendship_dates: dict[User, datetime], user: User = None, exclude_for_user: User = None):
         query = Q()
 
         if user:

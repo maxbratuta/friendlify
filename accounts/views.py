@@ -179,7 +179,9 @@ def accept_friend_request(request, username):
             sender=get_object_or_404(User, username=username),
             receiver=request.user,
             status=Friendship.PENDING
-        )
+        ).first()
+
+        # TODO : add verification to: receiver have friends limit, than sender send request and receiver accept it
 
         if pending_friendship:
             pending_friendship.accept()
@@ -271,10 +273,10 @@ def get_friendship_statuses(friend_1: User, friend_2: User):
     is_friendship_received = False
     is_friendship_sent = False
 
-    friendship = Friendship.get_friendships(friend_1=friend_2, friend_2=friend_1).first()
+    friendship = Friendship.get_friendships(friend_1=friend_2, friend_2=friend_1)
 
     if friendship:
-        if friendship.is_accepted():
+        if friendship.first().is_accepted():
             is_friends = True
         else:
             is_friendship_received = Friendship.is_pending_friendship_exists(sender=friend_1, receiver=friend_2)

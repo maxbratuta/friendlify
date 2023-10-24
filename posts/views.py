@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -9,6 +10,10 @@ from posts.models import Post
 
 @login_required(login_url="login")
 def index(request):
+    view_filter = request.GET.get("view")
+    username_filter = request.GET.get("username")
+    user = None
+
     conversations = [
         {
             'id': 200001,
@@ -30,11 +35,37 @@ def index(request):
 
     accepted_friendships = Friendship.get_friendships(friend_1=request.user, status=Friendship.ACCEPTED)
 
+    if username_filter:
+        user = User.objects.get(username=username_filter)
+
+        if not user:
+            redirect("posts.index", view=view_filter)
+
+        if user == request.user:
+            posts = Post.objects.filter(user=request.user)
+        else:
+            specific_filter_friendship = Friendship.get_friendships(
+                friend_1=request.user,
+                friend_2=user,
+                status=Friendship.ACCEPTED
+            )
+
+            posts = Post.objects.filter(
+                Q(user=user, updated_at__gte=specific_filter_friendship.get_dates()[user])
+            )
+    else:
+        posts = Post.get_posts(friendship_dates=accepted_friendships.get_dates(), user=request.user)
+
     return render(request, "posts/feed.html", {
         "pending_requests_count": Friendship.get_pending_friends_count_as_receiver(user=request.user),
         "friends": accepted_friendships.get_friends(user=request.user),
-        "posts": Post.get_posts(friendship_dates=accepted_friendships.get_dates(), user=request.user),
+        "posts": posts,
         "conversations": conversations,
+        "filter": {
+            "view": view_filter,
+            "username": username_filter,
+            "user_full_name": user.get_full_name() if user else None
+        }
     })
 
 
