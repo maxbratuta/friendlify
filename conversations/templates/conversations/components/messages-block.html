@@ -1,13 +1,13 @@
 <div class="messages-block__wrapper">
     {% if conversations %}
         {% for conversation in conversations %}
-            <a href="{% url 'conversation' conversation.id %}" class="link-block">
+            <a href="{% url "conversation" conversation.id %}" class="link-block">
                 {% include "conversations/components/message.html" with conversation=conversation %}
             </a>
         {% endfor %}
     {% else %}
         <div class="px-3 py-3 bg-light-2 rounded text-center">
-            <span class="px-4 py-1">You don't have friends. So sad.</span>
+            <span class="px-4 py-1">You have no friends yet</span>
         </div>
     {% endif %}
 </div>

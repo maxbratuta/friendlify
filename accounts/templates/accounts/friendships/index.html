@@ -1,0 +1,119 @@
+{% extends "friendlify/base.html" %}
+{% load static %}
+{% load icon %}
+
+{% block content %}
+    <main class="container my-5">
+        <div class="row gx-3 gy-3">
+            <div class="col col-lg-7 col-md-7 col-sm-12 col-12 order-lg-1 order-md-1 order-sm-2 order-2">
+                <div class="p-4 bg-light rounded">
+                    <div class="feed__wrapper">
+                        <div class="feed__header d-flex flex-row justify-content-between mb-4">
+                            <div class="d-inline-flex flex-row align-items-center">
+                                <h2 class="title h4 m-0">Friends</h2>
+                            </div>
+
+                            <div class="actions">
+                                <h4 class="h5 m-0">
+                                    <b>{{ friendship.friends_count }}</b>
+                                    out of
+                                    <b>{{ friendship.user_friends_limit }}</b>
+                                    friends
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="friends__content">
+                            <div class="row">
+                                <div class="friends-search overflow-scroll mh-512 col">
+                                    <div class="p-4 mb-3 bg-white rounded">
+                                        <div class="dropdown">
+                                            <label
+                                                for="friend_searchbar"
+                                                class="mb-2 fw-bold"
+                                            >Find new friends</label>
+
+                                            <input
+                                                id="friend_searchbar"
+                                                type="text"
+                                                placeholder="Search for a new friend"
+                                                class="form-control px-3 py-2 rounded bg-light bg-opacity-50 fs-7 fw-normal"
+                                            >
+
+                                            <div
+                                                class="dropdown-menu"
+                                                id="search_results_dropdown"
+                                                style="display: none"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                {% if friendship.pending_friends.as_receiver %}
+                                    <p class="my-3 fw-bold text-primary">Incoming requests ({{ friendship.pending_friends.as_receiver|length }})</p>
+
+                                    <div class="col-12">
+                                        <div class="overflow-scroll mh-256">
+                                            <div class="grid-container friends-grid-container">
+                                                {% for friend in friendship.pending_friends.as_receiver %}
+                                                    {% include "accounts/friendships/components/friend.html" with friend=friend %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if friendship.pending_friends.as_sender %}
+                                    <p class="my-3 fw-bold text-secondary">Outcoming requests ({{ friendship.pending_friends.as_sender|length }})</p>
+
+                                    <div class="col-12">
+                                        <div class="overflow-scroll mh-256">
+                                            <div class="grid-container friends-grid-container">
+                                                {% for friend in friendship.pending_friends.as_sender %}
+                                                    {% include "accounts/friendships/components/friend.html" with friend=friend %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+                            </div>
+
+                            <div class="row">
+                                <p class="my-3 fw-bold">Your friends</p>
+
+                                {% if friendship.friends %}
+                                    <div class="col-12">
+                                        <div class="friends overflow-scroll mh-256">
+                                            <div class="grid-container friends-grid-container">
+                                                {% for friend in friendship.friends %}
+                                                    {% include "accounts/friendships/components/friend.html" with friend=friend %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="col">
+                                        <div class="px-3 py-3 bg-light-2 rounded text-center">
+                                            <span class="px-4 py-1">You have no friends yet</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col col-lg-5 col-md-5 col-sm-12 col-12 order-lg-2 order-md-2 order-sm-1 order-1">
+                <div class="p-4 bg-light rounded">
+                    {% include "conversations/components/messages.html" with conversations=conversations %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

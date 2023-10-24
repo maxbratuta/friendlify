@@ -42,13 +42,13 @@
 
                                         <a
                                             href="#"
-                                            class="btn py-1 px-2 btn-danger fs-7"
+                                            class="btn py-1 px-2 btn-outline-danger fs-7"
                                             data-bs-toggle="modal"
                                             data-bs-target="#removeFriend"
                                         >Remove Friend</a>
                                     {% elif friendship.is_pending_received_friendship %}
                                         <form
-                                            action="{% url "friendship.accept_request" user.username %}"
+                                            action="{% url "friendships.accept_request" user.username %}"
                                             method="POST"
                                             class="d-inline"
                                         >
@@ -60,7 +60,7 @@
                                             >Confirm</button>
                                         </form>
                                         <form
-                                            action="{% url "friendship.destroy" user.username %}"
+                                            action="{% url "friendships.destroy" user.username %}"
                                             method="POST"
                                             class="d-inline"
                                         >
@@ -73,7 +73,7 @@
                                         </form>
                                     {% elif friendship.is_pending_sent_friendship %}
                                         <form
-                                            action="{% url "friendship.destroy" user.username %}"
+                                            action="{% url "friendships.destroy" user.username %}"
                                             method="POST"
                                         >
                                             {% csrf_token %}
@@ -85,7 +85,7 @@
                                         </form>
                                     {% else %}
                                         <form
-                                            action="{% url "friendship.send_request" user.username %}"
+                                            action="{% url "friendships.send_request" user.username %}"
                                             method="POST"
                                         >
                                             {% csrf_token %}
@@ -104,7 +104,21 @@
                         <div class="user-gallery__wrapper">
                             <div class="user-gallery__content">
                                 <div class="posts overflow-scroll mh-512">
-                                    {% include "posts/components/gallery-grid.html" with posts=posts friendship=friendship user=user %}
+                                    {% if posts %}
+                                        {% include "posts/components/gallery-grid.html" with posts=posts user=user %}
+                                    {% else %}
+                                        <div class="d-flex justify-content-center align-content-center bg-light-2 p-5 rounded text-center">
+                                            {% if is_friend %}
+                                                <p class="m-0">No shared memories with <b>{{ user.get_full_name }}</b> have been created yet.</p>
+                                            {% else %}
+                                                {% if user == request.user %}
+                                                    <p class="m-0">No posts have been created yet.</p>
+                                                {% else %}
+                                                    <p class="m-0">To create shared memories with <b>{{ user.get_full_name }}</b>, send a friend request.</p>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -139,7 +153,7 @@
                         <p class="m-0">Are you sure you want to remove <b>{{ user.get_full_name}}</b> from your friend list?</p>
                     </div>
                     <div class="modal-footer">
-                        <form action="{% url "friendship.destroy" user.username %}" method="POST">
+                        <form action="{% url "friendships.destroy" user.username %}" method="POST">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-danger">Remove</button>
                         </form>

@@ -70,7 +70,7 @@
                                             {% endfor %}
                                         {% else %}
                                             <li class="d-inline-flex flex-column w-max-content">
-                                                <span class="px-4 py-1">You don't have friends. So sad.</span>
+                                                <span class="px-4 py-1">You have no friends yet</span>
                                             </li>
                                         {% endif %}
                                     </ul>
@@ -94,8 +94,14 @@
                         <div class="feed__content">
                             <div class="row">
                                 {% if "gallery" in request.get_full_path %}
-                                    <div class="col posts overflow-scroll mh-512 ">
-                                        {% include "posts/components/gallery-grid.html" with posts=posts friendship=friendship user=user %}
+                                    <div class="col posts overflow-scroll mh-512">
+                                        {% if posts %}
+                                            {% include "posts/components/gallery-grid.html" with posts=posts user=user %}
+                                        {% else %}
+                                            <div class="d-flex justify-content-center align-content-center bg-light-2 p-5 rounded text-center">
+                                                <p class="m-0">No shared memories have been created yet.</p>
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 {% else %}
                                     {% if posts %}
@@ -160,7 +166,7 @@
                 <form action="{% url "posts.store" %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="modal-body">
-                        <div class="post-content overflow-hidden ratio ratio-1x1">
+                        <div class="overflow-hidden ratio ratio-1x1">
                             <div id="postPhoto" class="content-container position-relative w-100 h-100">
                                 <img
                                     id="capturedPhoto"

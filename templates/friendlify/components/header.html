@@ -7,21 +7,21 @@
                 {% if user.is_authenticated %}
                     <ul class="nav ms-4">
                         <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == "/feed/" %} active{% endif %}"
+                            <a class="nav-link  px-2 py-1 text-dark rounded{% if request.path == "/feed/" %} active{% endif %}"
                                href="{% url "posts.index" %}"
                             >Feed</a>
                         </li>
 
                         <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == "/messages/" %} active{% endif %}"
-                               href="{% url "register" %}"
+                            <a class="disabled nav-link px-2 py-1 text-dark rounded{% if request.path == "/messages/" %} active{% endif %}"
+                               href="#"
                             >Messages</a>
                         </li>
 
-                        <li class="nav-item rounded p-1">
-                            <a class="nav-link text-dark px-2 py-1 rounded{% if request.path == "/friends/" %} active{% endif %}"
-                               href="{% url "register" %}"
-                            >Friends</a>
+                        <li class="nav-item rounded p-1 position-relative">
+                            <a class="nav-link d-inline-flex align-items-center px-2 py-1 text-dark rounded{% if request.path == "/friendships/" %} active{% endif %}"
+                               href="{% url "friendships.index" %}"
+                            >Friends {% if pending_requests_count %} <span class="badge ms-1 text-bg-primary">{{ pending_requests_count }}</span> {% endif %}</a>
                         </li>
                     </ul>
                 {% endif %}
@@ -63,7 +63,7 @@
                             </li>
 
                             <li>
-                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                                <a class="dropdown-item" href="{% url "logout" %}">Logout</a>
                             </li>
                         </ul>
                     </div>

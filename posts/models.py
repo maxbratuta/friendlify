@@ -29,15 +29,7 @@ class Post(TimestampModel):
         storage.delete(path)
 
     @classmethod
-    def get_posts(cls, friendships, user=None, exclude_for_user=None):
-        friendship_dates = {}
-
-        for friendship in friendships:
-            if friendship.sender not in friendship_dates:
-                friendship_dates[friendship.sender] = friendship.updated_at
-            if friendship.receiver not in friendship_dates:
-                friendship_dates[friendship.receiver] = friendship.updated_at
-
+    def get_posts(cls, friendship_dates: dict, user: User = None, exclude_for_user: User = None):
         query = Q()
 
         if user:
@@ -46,6 +38,7 @@ class Post(TimestampModel):
         for friend, date in friendship_dates.items():
             if exclude_for_user and exclude_for_user == friend:
                 continue
+
             query |= Q(user=friend, updated_at__gte=date)
 
         return cls.objects.filter(query)

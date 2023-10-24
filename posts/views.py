@@ -26,13 +26,14 @@ def index(request):
             'last_message': 'Muy bien :)',
         },
     ]
-    conversations = []  # TODO : get all conversations with friends
+    conversations = []  # TODO : get all conversations with friendships
 
-    friendships = Friendship.get_accepted_friendships(user=request.user)
+    accepted_friendships = Friendship.get_friendships(friend_1=request.user, status=Friendship.ACCEPTED)
 
     return render(request, "posts/feed.html", {
-        "friends": Friendship.get_friends(friendships=friendships, user=request.user),
-        "posts": Post.get_posts(friendships=friendships, user=request.user),
+        "pending_requests_count": Friendship.get_pending_friends_count_as_receiver(user=request.user),
+        "friends": accepted_friendships.get_friends(user=request.user),
+        "posts": Post.get_posts(friendship_dates=accepted_friendships.get_dates(), user=request.user),
         "conversations": conversations,
     })
 
@@ -51,7 +52,7 @@ def store(request):
             description=request.POST.get("post_message", None),
         )
 
-        friends = User.objects.all()  # TODO : get friends list from POST
+        friends = User.objects.all()  # TODO : get friendships list from POST
 
         post.participants.set(friends)
 

@@ -1,14 +1,15 @@
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from rest_framework.generics import get_object_or_404
 
 from posts.models import Post
+from .forms import UserForm, UserStoreForm
 from .models import User, Friendship
-from .forms import UserStoreForm, UserForm
 
 
 def login_page(request):
@@ -36,7 +37,7 @@ def login_page(request):
             messages.error(request, "Invalid password")
             return redirect("login")
 
-    return render(request, "accounts/login.html")
+    return render(request, "accounts/auth/login.html")
 
 
 def register_page(request):
@@ -64,7 +65,7 @@ def register_page(request):
     else:
         form = UserStoreForm()
 
-    return render(request, "accounts/register.html", {"form": form})
+    return render(request, "accounts/auth/register.html", {"form": form})
 
 
 def logout_user(request):
@@ -74,24 +75,7 @@ def logout_user(request):
 
 @login_required(login_url="login")
 def user_show(request, username):
-    conversations = [
-        {
-            'id': 200001,
-            'friend': User.objects.filter(username="ola_hombre").get(),
-            'last_message': 'Gorgeous!',
-        },
-        {
-            'id': 200002,
-            'friend': User.objects.filter(username="paulina_sombrero").get(),
-            'last_message': 'Hola!',
-        },
-        {
-            'id': 200003,
-            'friend': User.objects.filter(username="hose_horse").get(),
-            'last_message': 'Muy bien :)',
-        },
-    ]
-    conversations = []  # TODO : get all conversations with friends
+    conversations = []  # TODO : get all conversations with friendships
 
     is_friendship_received = False
     is_friendship_sent = False
@@ -100,48 +84,30 @@ def user_show(request, username):
     posts = []
     friends_count = 0
 
-    friendships = Friendship.get_accepted_friendships(user=request.user)
-
     if username == request.user.username:
         user = request.user
         posts = user.post_set.all()
-        friends_count = friendships.count()
+
+        friends_count = len(Friendship.get_friends(user=request.user))  # TODO : reuse with conversations
     else:
         user = get_object_or_404(User, username=username)
 
-        is_friendship_received = Friendship.objects.filter(
-            sender=user,
-            receiver=request.user,
-            status=Friendship.PENDING
-        ).exists()
+        is_friends, \
+            is_friendship_received, \
+            is_friendship_sent, \
+            friendship = get_friendship_statuses(friend_1=user, friend_2=request.user)
 
-        is_friendship_sent = Friendship.objects.filter(
-            sender=request.user,
-            receiver=user,
-            status=Friendship.PENDING
-        ).exists()
-
-        if not is_friendship_received and not is_friendship_sent:
-            specific_friendship = Friendship.objects.filter(
-                Q(sender=request.user, receiver=user) |
-                Q(sender=user, receiver=request.user),
-                status=Friendship.ACCEPTED
-            )
-
-            is_friends = specific_friendship.exists()
-
-            if is_friends:
-                posts = Post.get_posts(friendships=specific_friendship, exclude_for_user=request.user)
+        if is_friends:
+            posts = Post.get_posts(friendship_dates=friendship.get_dates(), exclude_for_user=request.user)
 
     return render(request, "accounts/users/show.html", {
+        "pending_requests_count": Friendship.get_pending_friends_count_as_receiver(user=request.user),
         "user": user,
         "posts": posts,
         "conversations": conversations,  # TODO : CONVERSATIONS
-
         "friendship": {
             'friends_count': friends_count,
             "user_friends_limit": Friendship.USER_FRIENDS_LIMIT,
-
             "is_pending_received_friendship": is_friendship_received,
             "is_pending_sent_friendship": is_friendship_sent,
             "is_friend": is_friends,
@@ -171,7 +137,10 @@ def user_edit(request, username):
     else:
         form = UserForm(instance=request.user)
 
-    return render(request, "accounts/users/edit.html", {"form": form})
+    return render(request, "accounts/users/edit.html", {
+        "pending_requests_count": Friendship.get_pending_friends_count_as_receiver(user=request.user),
+        "form": form
+    })
 
 
 @login_required(login_url="login")
@@ -183,15 +152,21 @@ def user_destroy(request):
 @login_required(login_url="login")
 def send_friend_request(request, username):
     if request.method == "POST":
-        friendships = Friendship.get_accepted_friendships(user=request.user)
+        user = get_object_or_404(User, username=username)
 
-        if friendships.count() < Friendship.USER_FRIENDS_LIMIT:
-            Friendship.objects.get_or_create(
-                sender=request.user,
-                receiver=get_object_or_404(User, username=username)
-            )
+        friendship = Friendship.get_friendships(friend_1=request.user, friend_2=user).first()
+
+        if friendship:
+            messages.info(request, "The friendship is already created.")
+            return redirect("users.show", username)
+
+        friendships_count = Friendship.get_friendships(friend_1=request.user).count()
+
+        if friendships_count < Friendship.USER_FRIENDS_LIMIT:
+            Friendship.objects.create(sender=request.user, receiver=user)
         else:
-            messages.error(request, "Allowed number of friends exceeded. You can have up to 20 friends at a time")
+            messages.error(request, "Allowed number of friendships exceeded."
+                                    f"You can have up to { Friendship.USER_FRIENDS_LIMIT } friendships at a time.")
 
         # TODO : send notification to receiver
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -200,14 +175,17 @@ def send_friend_request(request, username):
 @login_required(login_url="login")
 def accept_friend_request(request, username):
     if request.method == "POST":
-        friendship = get_object_or_404(
-            Friendship,
+        pending_friendship = Friendship.get_specific_friendship(
             sender=get_object_or_404(User, username=username),
-            receiver=request.user
+            receiver=request.user,
+            status=Friendship.PENDING
         )
 
-        friendship.accept()
-        # TODO : send notification to receiver
+        if pending_friendship:
+            pending_friendship.accept()
+            # TODO : send notification to receiver
+        else:
+            messages.error(request, "The friendship you are referring to does not exist!")
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -215,15 +193,91 @@ def accept_friend_request(request, username):
 @login_required(login_url="login")
 def friendship_destroy(request, username):
     if request.method == "POST":
-        user = get_object_or_404(User, username=username)
+        friendship = Friendship.get_friendships(
+            friend_1=request.user,
+            friend_2=get_object_or_404(User, username=username),
+        ).first()
 
-        friendship = get_object_or_404(
-            Friendship,
-            Q(sender=request.user, receiver=user) |
-            Q(sender=user, receiver=request.user)
-        )
-
-        friendship.destroy()
-        # TODO : send notification to receiver
+        if friendship:
+            friendship.destroy()
+            # TODO : send notification to receiver
+        else:
+            messages.error(request, "The friendship you are referring to does not exist!")
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required(login_url="login")
+def friendship_index(request):
+    conversations = []  # TODO : get all conversations with friendships
+
+    friends = Friendship.get_friends(user=request.user)
+
+    return render(request, "accounts/friendships/index.html", {
+        "pending_requests_count": Friendship.get_pending_friends_count_as_receiver(user=request.user),
+        "friendship": {
+            'friends_count': len(friends),
+            "user_friends_limit": Friendship.USER_FRIENDS_LIMIT,
+            "friends": friends,
+            "pending_friends": {
+                "as_sender": Friendship.get_pending_friends_as_sender(user=request.user),
+                "as_receiver": Friendship.get_pending_friends_as_receiver(user=request.user),
+            }
+        },
+        "conversations": conversations,
+    })
+
+
+def user_search(request):
+    query = request.GET.get("q")
+
+    filtered_users = User.objects.filter(
+        Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)
+    )[:5] if query else []
+
+    data = []
+
+    for user in filtered_users:
+        is_friends, \
+            is_friendship_received, \
+            is_friendship_sent, \
+            friendship = get_friendship_statuses(friend_1=user, friend_2=request.user)
+
+        if user == request.user:
+            status = {"value": "You", "style": "dark"}
+        elif is_friends:
+            status = {"value": "Friend", "style": "success"}
+        elif is_friendship_received:
+            status = {"value": "Incoming request", "style": "primary"}
+        elif is_friendship_sent:
+            status = {"value": "Outcoming request", "style": "secondary"}
+        else:
+            status = None
+
+        data.append({
+            "ref_link": reverse("users.show", args=[user.username]),
+            "username": user.username,
+            "avatar": user.avatar.url if user.avatar else None,
+            "initials": user.initials,
+            "full_name": user.get_full_name(),
+            "friendship_status": status,
+        })
+
+    return JsonResponse({"data": data})
+
+
+def get_friendship_statuses(friend_1: User, friend_2: User):
+    is_friends = False
+    is_friendship_received = False
+    is_friendship_sent = False
+
+    friendship = Friendship.get_friendships(friend_1=friend_2, friend_2=friend_1).first()
+
+    if friendship:
+        if friendship.is_accepted():
+            is_friends = True
+        else:
+            is_friendship_received = Friendship.is_pending_friendship_exists(sender=friend_1, receiver=friend_2)
+            is_friendship_sent = not is_friendship_received
+
+    return is_friends, is_friendship_received, is_friendship_sent, friendship

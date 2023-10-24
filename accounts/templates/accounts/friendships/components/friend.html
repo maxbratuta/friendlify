@@ -1,0 +1,51 @@
+{% load icon %}
+
+<div class="friend d-flex flex-row justify-content-between px-3 py-2 bg-light-2 rounded border-2 border-primary">
+    <a
+        href="{% url "users.show" friend.username %}"
+        class="d-inline-flex justify-content-between align-items-center link-block rounded"
+    >
+        {% include "accounts/components/user-profile-avatar.html" with user=friend %}
+
+        <div class="d-flex flex-column align-content-between ms-2 hoverable-text">
+            <span class="user-name fw-bold">{{ friend.get_full_name }}</span>
+        </div>
+    </a>
+
+    <div class="d-flex align-items-center">
+        <a
+            href="#"
+            class="d-inline-flex align-items-center py-1 px-2 text-dark rounded"
+            data-bs-toggle="modal"
+            data-bs-target="#removeFriend{{ friend.username }}"
+        >{% icon "x" width="16" height="16" %}</a>
+    </div>
+</div>
+
+<div
+    class="modal fade position-fixed"
+    id="removeFriend{{ friend.username }}"
+    tabindex="-1"
+    aria-labelledby="removeFriendLabel{{ friend.username }}"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeFriendLabel{{ friend.username }}">Remove Friend</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body m-0">
+                <p class="m-0">Are you sure you want to remove <b>{{ friend.get_full_name}}</b> from your friend list?</p>
+            </div>
+            <div class="modal-footer">
+                <form action="{% url "friendships.destroy" friend.username %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger">Remove</button>
+                </form>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
